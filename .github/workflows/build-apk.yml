@@ -40,14 +40,15 @@ jobs:
         with:
           tag_name: v1.0.0
           name: AuraStream Release v1.0.0
+          overwrite: true
           body: |
             ## AuraStream Mobile - Smart Audio Streaming System v1.0.0 🎵🚀
             
             ### Included Deliverables:
-            - **aurastream-mobile-debug.apk**: Native Android App (Kotlin, Jetpack Compose, Media3/ExoPlayer).
+            - **aurastream-mobile.apk**: Native Android App (Kotlin, Jetpack Compose, Media3/ExoPlayer).
             - **aurastream-backend.jar**: Spring Boot 3.2 HTTP Byte-Range Audio Streaming & Playlist REST Server.
           files: |
-            aurastream-mobile/app/build/outputs/apk/debug/app-debug.apk
-            aurastream-backend/target/aurastream-backend-1.0.0-SNAPSHOT.jar
+            aurastream-mobile/app/build/outputs/apk/debug/*.apk
+            aurastream-backend/target/*.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
