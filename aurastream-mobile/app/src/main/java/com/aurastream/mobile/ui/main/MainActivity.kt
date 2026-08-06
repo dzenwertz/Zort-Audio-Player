@@ -11,7 +11,7 @@ import com.aurastream.mobile.ui.theme.AuraTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate()
+        super.onCreate(savedInstanceState)
         setContent {
             AuraTheme {
                 Surface(
