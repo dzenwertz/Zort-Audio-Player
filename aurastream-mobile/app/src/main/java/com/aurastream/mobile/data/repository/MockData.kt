@@ -1,6 +1,7 @@
 package com.aurastream.mobile.data.repository
 
 import com.aurastream.mobile.domain.model.Playlist
+import com.aurastream.mobile.domain.model.PlaylistItem
 import com.aurastream.mobile.domain.model.Song
 
 object MockData {
@@ -72,17 +73,26 @@ object MockData {
             id = 1L,
             name = "Modo Enfoque",
             description = "Música electrónica y lo-fi suave para concentrarte",
-            songCount = 3,
             coverUrl = "https://images.unsplash.com/photo-1518609878373-06d740f60d8b?q=80&w=600&auto=format&fit=crop",
-            songs = listOf(sampleSongs[0], sampleSongs[1], sampleSongs[4])
+            createdAt = "2026-08-06",
+            items = listOf(
+                PlaylistItem(1L, sampleSongs[0], "2026-08-06", 1),
+                PlaylistItem(2L, sampleSongs[1], "2026-08-06", 2),
+                PlaylistItem(3L, sampleSongs[4], "2026-08-06", 3)
+            ),
+            totalSongs = 3
         ),
         Playlist(
             id = 2L,
             name = "Modo Relax",
             description = "Canciones acústicas y ambient para relajarse",
-            songCount = 2,
             coverUrl = "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=600&auto=format&fit=crop",
-            songs = listOf(sampleSongs[3], sampleSongs[4])
+            createdAt = "2026-08-06",
+            items = listOf(
+                PlaylistItem(4L, sampleSongs[3], "2026-08-06", 1),
+                PlaylistItem(5L, sampleSongs[4], "2026-08-06", 2)
+            ),
+            totalSongs = 2
         )
     )
 }

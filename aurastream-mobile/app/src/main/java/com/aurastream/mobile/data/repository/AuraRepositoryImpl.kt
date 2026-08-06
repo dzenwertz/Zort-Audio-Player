@@ -6,6 +6,7 @@ import com.aurastream.mobile.data.dto.toDomain
 import com.aurastream.mobile.data.remote.AuraApiService
 import com.aurastream.mobile.data.remote.RetrofitClient
 import com.aurastream.mobile.domain.model.Playlist
+import com.aurastream.mobile.domain.model.PlaylistItem
 import com.aurastream.mobile.domain.model.Song
 import com.aurastream.mobile.domain.repository.AuraRepository
 
@@ -92,9 +93,10 @@ class AuraRepositoryImpl(
                 id = (MockData.samplePlaylists.size + 1).toLong(),
                 name = name,
                 description = description ?: "",
-                songCount = 0,
                 coverUrl = "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=600&auto=format&fit=crop",
-                songs = emptyList()
+                createdAt = "2026-08-06",
+                items = emptyList(),
+                totalSongs = 0
             )
             MockData.samplePlaylists.add(newPlaylist)
             newPlaylist
@@ -109,11 +111,17 @@ class AuraRepositoryImpl(
             if (targetPlaylistIndex != -1) {
                 val currentPlaylist = MockData.samplePlaylists[targetPlaylistIndex]
                 val songToAdd = MockData.sampleSongs.firstOrNull { it.id == songId }
-                if (songToAdd != null && !currentPlaylist.songs.any { it.id == songId }) {
-                    val updatedSongs = currentPlaylist.songs + songToAdd
+                if (songToAdd != null && !currentPlaylist.items.any { it.song.id == songId }) {
+                    val newPlaylistItem = PlaylistItem(
+                        id = (currentPlaylist.items.size + 1).toLong(),
+                        song = songToAdd,
+                        addedAt = "2026-08-06",
+                        position = currentPlaylist.items.size + 1
+                    )
+                    val updatedItems = currentPlaylist.items + newPlaylistItem
                     val updatedPlaylist = currentPlaylist.copy(
-                        songCount = updatedSongs.size,
-                        songs = updatedSongs
+                        items = updatedItems,
+                        totalSongs = updatedItems.size
                     )
                     MockData.samplePlaylists[targetPlaylistIndex] = updatedPlaylist
                     updatedPlaylist
@@ -133,10 +141,10 @@ class AuraRepositoryImpl(
             val targetPlaylistIndex = MockData.samplePlaylists.indexOfFirst { it.id == playlistId }
             if (targetPlaylistIndex != -1) {
                 val currentPlaylist = MockData.samplePlaylists[targetPlaylistIndex]
-                val updatedSongs = currentPlaylist.songs.filterNot { it.id == songId }
+                val updatedItems = currentPlaylist.items.filterNot { it.song.id == songId }
                 val updatedPlaylist = currentPlaylist.copy(
-                    songCount = updatedSongs.size,
-                    songs = updatedSongs
+                    items = updatedItems,
+                    totalSongs = updatedItems.size
                 )
                 MockData.samplePlaylists[targetPlaylistIndex] = updatedPlaylist
                 updatedPlaylist
