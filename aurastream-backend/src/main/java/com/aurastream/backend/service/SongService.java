@@ -43,7 +43,6 @@ public class SongService {
 
     @Transactional(readOnly = true)
     public List<SongDto> getRecommendedSongs() {
-        // Simple recommendation algorithm: rank songs by play count and BPM distribution
         return songRepository.findTop10ByOrderByPlayCountDesc().stream()
                 .map(this::mapToDto)
                 .collect(Collectors.toList());
