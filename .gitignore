@@ -1,0 +1,23 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Java / Maven
+aurastream-backend/target/
+
+# Android / Gradle
+aurastream-mobile/.gradle/
+aurastream-mobile/build/
+aurastream-mobile/app/build/
+aurastream-mobile/local.properties
+*.apk
+*.keystore
+*.jks
+
+# Logs
+*.log
