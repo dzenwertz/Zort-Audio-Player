@@ -1,0 +1,88 @@
+package com.aurastream.mobile.data.repository
+
+import com.aurastream.mobile.domain.model.Playlist
+import com.aurastream.mobile.domain.model.Song
+
+object MockData {
+    val sampleSongs = listOf(
+        Song(
+            id = 1L,
+            title = "Midnight Synthwave",
+            artistName = "Aurawave Studio",
+            albumTitle = "Neon Dreams Vol. 1",
+            coverUrl = "https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=600&auto=format&fit=crop",
+            durationSeconds = 215,
+            genre = "Electronic",
+            audioUrl = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
+            playCount = 1420,
+            bpm = 120
+        ),
+        Song(
+            id = 2L,
+            title = "Chill Lofi Beats",
+            artistName = "Luna Eclipse",
+            albumTitle = "Midnight Focus Session",
+            coverUrl = "https://images.unsplash.com/photo-1518609878373-06d740f60d8b?q=80&w=600&auto=format&fit=crop",
+            durationSeconds = 180,
+            genre = "Lo-Fi",
+            audioUrl = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+            playCount = 3890,
+            bpm = 85
+        ),
+        Song(
+            id = 3L,
+            title = "Cyberpunk Pulse",
+            artistName = "Neon Overdrive",
+            albumTitle = "Futuristic Horizons",
+            coverUrl = "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=600&auto=format&fit=crop",
+            durationSeconds = 240,
+            genre = "Synthpop",
+            audioUrl = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
+            playCount = 2750,
+            bpm = 128
+        ),
+        Song(
+            id = 4L,
+            title = "Acoustic Sunset",
+            artistName = "Solar Horizon",
+            albumTitle = "Unplugged Sessions",
+            coverUrl = "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=600&auto=format&fit=crop",
+            durationSeconds = 195,
+            genre = "Acoustic",
+            audioUrl = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3",
+            playCount = 980,
+            bpm = 95
+        ),
+        Song(
+            id = 5L,
+            title = "Deep Space Ambient",
+            artistName = "Starlight Echo",
+            albumTitle = "Cosmic Journey",
+            coverUrl = "https://images.unsplash.com/photo-1459749411175-04bf5292ceea?q=80&w=600&auto=format&fit=crop",
+            durationSeconds = 310,
+            genre = "Ambient",
+            audioUrl = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3",
+            playCount = 4210,
+            bpm = 70
+        )
+    )
+
+    val samplePlaylists = mutableListOf(
+        Playlist(
+            id = 1L,
+            name = "Modo Enfoque",
+            description = "Música electrónica y lo-fi suave para concentrarte",
+            songCount = 3,
+            coverUrl = "https://images.unsplash.com/photo-1518609878373-06d740f60d8b?q=80&w=600&auto=format&fit=crop",
+            songs = listOf(sampleSongs[0], sampleSongs[1], sampleSongs[4])
+        ),
+        Playlist(
+            id = 2L,
+            name = "Modo Relax",
+            description = "Canciones acústicas y ambient para relajarse",
+            songCount = 2,
+            coverUrl = "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=600&auto=format&fit=crop",
+            songs = listOf(sampleSongs[3], sampleSongs[4])
+        )
+    )
+}

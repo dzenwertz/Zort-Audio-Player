@@ -10,10 +10,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -21,12 +20,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.aurastream.mobile.data.remote.RetrofitClient
 import com.aurastream.mobile.domain.model.Playlist
 import com.aurastream.mobile.domain.model.Song
 import com.aurastream.mobile.ui.components.ShimmerLoadingEffect
 import com.aurastream.mobile.ui.components.SongItemRow
 import com.aurastream.mobile.ui.theme.SpotifyDark
 import com.aurastream.mobile.ui.theme.SpotifyGreen
+import com.aurastream.mobile.ui.theme.SpotifySurface
 import com.aurastream.mobile.ui.theme.SpotifySurfaceVariant
 import com.aurastream.mobile.ui.theme.TextSecondary
 
@@ -40,6 +41,7 @@ fun HomeScreen(
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    var showIpDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -47,7 +49,8 @@ fun HomeScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp, vertical = 16.dp),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
                     text = "AuraStream",
@@ -55,6 +58,13 @@ fun HomeScreen(
                     fontWeight = FontWeight.Bold,
                     color = SpotifyGreen
                 )
+                IconButton(onClick = { showIpDialog = true }) {
+                    Icon(
+                        imageVector = Icons.Default.Settings,
+                        contentDescription = "Configurar IP",
+                        tint = TextSecondary
+                    )
+                }
             }
         },
         containerColor = SpotifyDark
@@ -159,8 +169,68 @@ fun HomeScreen(
                     }
                 }
             }
+
+            if (showIpDialog) {
+                ServerIpDialog(
+                    currentUrl = RetrofitClient.currentBaseUrl,
+                    onDismiss = { showIpDialog = false },
+                    onSave = { newUrl ->
+                        RetrofitClient.setBaseUrl(newUrl)
+                        showIpDialog = false
+                        viewModel.loadHomeData()
+                    }
+                )
+            }
         }
     }
+}
+
+@Composable
+private fun ServerIpDialog(
+    currentUrl: String,
+    onDismiss: () -> Unit,
+    onSave: (String) -> Unit
+) {
+    var ipInput by remember { mutableStateOf(currentUrl) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Configurar Servidor", fontWeight = FontWeight.Bold) },
+        text = {
+            Column {
+                Text(
+                    text = "IP de tu PC con Spring Boot (ej: http://192.168.1.15:8080)",
+                    fontSize = 12.sp,
+                    color = TextSecondary
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                OutlinedTextField(
+                    value = ipInput,
+                    onValueChange = { ipInput = it },
+                    label = { Text("URL Base Backend") },
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = SpotifyGreen,
+                        focusedLabelColor = SpotifyGreen
+                    )
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = { onSave(ipInput) },
+                colors = ButtonDefaults.buttonColors(containerColor = SpotifyGreen)
+            ) {
+                Text("Guardar", color = SpotifyDark, fontWeight = FontWeight.Bold)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancelar", color = TextSecondary)
+            }
+        },
+        containerColor = SpotifySurface
+    )
 }
 
 @Composable

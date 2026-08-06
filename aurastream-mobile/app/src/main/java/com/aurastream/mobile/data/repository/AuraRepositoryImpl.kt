@@ -17,38 +17,140 @@ class AuraRepositoryImpl(
         get() = RetrofitClient.currentBaseUrl
 
     override suspend fun getRecommendedSongs(): Result<List<Song>> = runCatching {
-        apiService.getRecommendedSongs().map { it.toDomain(baseUrl) }
+        try {
+            val response = apiService.getRecommendedSongs()
+            if (response.isNotEmpty()) {
+                response.map { it.toDomain(baseUrl) }
+            } else {
+                MockData.sampleSongs
+            }
+        } catch (e: Exception) {
+            MockData.sampleSongs
+        }
     }
 
     override suspend fun searchSongs(query: String?): Result<List<Song>> = runCatching {
-        apiService.searchSongs(query).map { it.toDomain(baseUrl) }
+        try {
+            val response = apiService.searchSongs(query)
+            if (response.isNotEmpty()) {
+                response.map { it.toDomain(baseUrl) }
+            } else if (query.isNullOrBlank()) {
+                MockData.sampleSongs
+            } else {
+                MockData.sampleSongs.filter {
+                    it.title.contains(query, ignoreCase = true) ||
+                            it.artistName.contains(query, ignoreCase = true) ||
+                            it.genre.contains(query, ignoreCase = true)
+                }
+            }
+        } catch (e: Exception) {
+            if (query.isNullOrBlank()) {
+                MockData.sampleSongs
+            } else {
+                MockData.sampleSongs.filter {
+                    it.title.contains(query, ignoreCase = true) ||
+                            it.artistName.contains(query, ignoreCase = true)
+                }
+            }
+        }
     }
 
     override suspend fun getSongById(id: Long): Result<Song> = runCatching {
-        apiService.getSongById(id).toDomain(baseUrl)
+        try {
+            apiService.getSongById(id).toDomain(baseUrl)
+        } catch (e: Exception) {
+            MockData.sampleSongs.firstOrNull { it.id == id } ?: MockData.sampleSongs.first()
+        }
     }
 
     override suspend fun getPlaylists(): Result<List<Playlist>> = runCatching {
-        apiService.getPlaylists().map { it.toDomain(baseUrl) }
+        try {
+            val response = apiService.getPlaylists()
+            if (response.isNotEmpty()) {
+                response.map { it.toDomain(baseUrl) }
+            } else {
+                MockData.samplePlaylists
+            }
+        } catch (e: Exception) {
+            MockData.samplePlaylists
+        }
     }
 
     override suspend fun getPlaylistById(id: Long): Result<Playlist> = runCatching {
-        apiService.getPlaylistById(id).toDomain(baseUrl)
+        try {
+            apiService.getPlaylistById(id).toDomain(baseUrl)
+        } catch (e: Exception) {
+            MockData.samplePlaylists.firstOrNull { it.id == id } ?: MockData.samplePlaylists.first()
+        }
     }
 
     override suspend fun createPlaylist(name: String, description: String?): Result<Playlist> = runCatching {
-        apiService.createPlaylist(CreatePlaylistDto(name, description)).toDomain(baseUrl)
+        try {
+            apiService.createPlaylist(CreatePlaylistDto(name, description)).toDomain(baseUrl)
+        } catch (e: Exception) {
+            val newPlaylist = Playlist(
+                id = (MockData.samplePlaylists.size + 1).toLong(),
+                name = name,
+                description = description ?: "",
+                songCount = 0,
+                coverUrl = "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?q=80&w=600&auto=format&fit=crop",
+                songs = emptyList()
+            )
+            MockData.samplePlaylists.add(newPlaylist)
+            newPlaylist
+        }
     }
 
     override suspend fun addSongToPlaylist(playlistId: Long, songId: Long): Result<Playlist> = runCatching {
-        apiService.addSongToPlaylist(playlistId, AddSongDto(songId)).toDomain(baseUrl)
+        try {
+            apiService.addSongToPlaylist(playlistId, AddSongDto(songId)).toDomain(baseUrl)
+        } catch (e: Exception) {
+            val targetPlaylistIndex = MockData.samplePlaylists.indexOfFirst { it.id == playlistId }
+            if (targetPlaylistIndex != -1) {
+                val currentPlaylist = MockData.samplePlaylists[targetPlaylistIndex]
+                val songToAdd = MockData.sampleSongs.firstOrNull { it.id == songId }
+                if (songToAdd != null && !currentPlaylist.songs.any { it.id == songId }) {
+                    val updatedSongs = currentPlaylist.songs + songToAdd
+                    val updatedPlaylist = currentPlaylist.copy(
+                        songCount = updatedSongs.size,
+                        songs = updatedSongs
+                    )
+                    MockData.samplePlaylists[targetPlaylistIndex] = updatedPlaylist
+                    updatedPlaylist
+                } else {
+                    currentPlaylist
+                }
+            } else {
+                MockData.samplePlaylists.first()
+            }
+        }
     }
 
     override suspend fun removeSongFromPlaylist(playlistId: Long, songId: Long): Result<Playlist> = runCatching {
-        apiService.removeSongFromPlaylist(playlistId, songId).toDomain(baseUrl)
+        try {
+            apiService.removeSongFromPlaylist(playlistId, songId).toDomain(baseUrl)
+        } catch (e: Exception) {
+            val targetPlaylistIndex = MockData.samplePlaylists.indexOfFirst { it.id == playlistId }
+            if (targetPlaylistIndex != -1) {
+                val currentPlaylist = MockData.samplePlaylists[targetPlaylistIndex]
+                val updatedSongs = currentPlaylist.songs.filterNot { it.id == songId }
+                val updatedPlaylist = currentPlaylist.copy(
+                    songCount = updatedSongs.size,
+                    songs = updatedSongs
+                )
+                MockData.samplePlaylists[targetPlaylistIndex] = updatedPlaylist
+                updatedPlaylist
+            } else {
+                MockData.samplePlaylists.first()
+            }
+        }
     }
 
     override suspend fun deletePlaylist(playlistId: Long): Result<Unit> = runCatching {
-        apiService.deletePlaylist(playlistId)
+        try {
+            apiService.deletePlaylist(playlistId)
+        } catch (e: Exception) {
+            MockData.samplePlaylists.removeAll { it.id == playlistId }
+        }
     }
 }
